@@ -47,7 +47,7 @@ from database import (execute, one, many, init_db, now, get_user, uname, set_sta
 
 # ════════════════════════════ НАСТРОЙКИ ════════════════════════════
 TOKEN = os.environ.get("BOT_TOKEN")      # ключ доступа сообщества
-GROUP_ID = os.environ.get("GROUP_ID")                  # ID сообщества (только цифры, без минуса)
+GROUP_ID = os.environ.get("VK_GROUP_ID")                  # ID сообщества (только цифры, без минуса)
 ADMIN_IDS = [739351270]                         # ваши VK ID — получат админ-кнопки в боте
 
 WEB_ENABLED = True                      # веб-панель вкл/выкл
