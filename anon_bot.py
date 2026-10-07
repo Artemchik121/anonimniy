@@ -46,15 +46,15 @@ from database import (execute, one, many, init_db, now, get_user, uname, set_sta
                       state_data, get_stats)
 
 # ════════════════════════════ НАСТРОЙКИ ════════════════════════════
-TOKEN = "BOT_TOKEN"      # ключ доступа сообщества
-GROUP_ID = "GROUP_ID"                   # ID сообщества (только цифры, без минуса)
+TOKEN = os.environ.get("BOT_TOKEN")      # ключ доступа сообщества
+GROUP_ID = os.environ.get("GROUP_ID")                  # ID сообщества (только цифры, без минуса)
 ADMIN_IDS = [739351270]                         # ваши VK ID — получат админ-кнопки в боте
 
 WEB_ENABLED = True                      # веб-панель вкл/выкл
 WEB_HOST = "127.0.0.1"                  # "0.0.0.0" — если нужен доступ с других устройств
 WEB_PORT = 5000
-WEB_PASSWORD = "SECRET"            # пароль входа в веб-панель
-SECRET_KEY = "SECRET"                         # любая длинная строка; пусто = случайная при каждом старте
+WEB_PASSWORD = os.environ.get("SECRET", "changeme")            # пароль входа в веб-панель
+SECRET_KEY = os.environ.get("SECRET", "changeme")                        # любая длинная строка; пусто = случайная при каждом старте
 
 ASK_COOLDOWN = 20                       # секунд между вопросами одного человека
 MAX_LEN = 1000                          # макс. длина вопроса / ответа
