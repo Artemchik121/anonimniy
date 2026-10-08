@@ -30,7 +30,6 @@ import sys
 import tempfile
 import threading
 import time
-import vk_api
 from datetime import datetime
 
 # ── Автоустановка библиотек ──────────────────────────────────────────
