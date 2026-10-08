@@ -18,6 +18,8 @@
      Типы событий: «Входящее сообщение» и «Действие с callback-кнопкой».
 """
 
+print(">>> ЗАПУЩЕНА ВЕРСИЯ ФАЙЛА: v3 (с автоустановкой библиотек)", flush=True)
+
 import hmac
 import json
 import logging
