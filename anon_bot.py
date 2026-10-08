@@ -27,13 +27,13 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "vk_api==11.9.8"])
     import vk_api
+
 import hmac
 import json
 import logging
 import re
 import secrets
 import os
-import sys
 import tempfile
 import threading
 import time
