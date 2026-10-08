@@ -30,6 +30,7 @@ import sys
 import tempfile
 import threading
 import time
+import vk_api
 from datetime import datetime
 
 # ── Автоустановка библиотек ──────────────────────────────────────────
@@ -62,7 +63,6 @@ def _ensure_packages():
 _ensure_packages()
 
 
-import vk_api
 try:
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:      # pip install pillow
