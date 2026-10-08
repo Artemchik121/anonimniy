@@ -7,26 +7,65 @@
 Нужен рядом файл database.py (база данных).
 Установка:      pip install vk_api flask pillow
 Запуск:         python anon_bot.py
-Веб-панель:     http://127.0.0.1:5000  (пароль — WEB_PASSWORD ниже)
-База данных:    SQLite, файл anon_bot.db создаётся сам рядом со скриптом.
-
-Настройка сообщества VK (Управление → Работа с API / Сообщения):
-  1. Сообщения сообщества — включить. Возможности ботов — включить,
-     «Разрешить добавлять сообщество в беседы» — по желанию.
-  2. Ключ доступа: права «сообщения» (и «управление»).
-  3. Long Poll API — включить, версия 5.199 (или новее).
-     Типы событий: «Входящее сообщение» и «Действие с callback-кнопкой».
 """
 
-print(">>> ЗАПУЩЕНА ВЕРСИЯ ФАЙЛА: v3 (с автоустановкой библиотек)", flush=True)
+print(">>> ЗАПУЩЕНА ВЕРСИЯ ФАЙЛА: v4 (жёсткая автоустановка)", flush=True)
+
 import subprocess
 import sys
+import os
+import importlib
 
-try:
-    import vk_api
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "vk_api==11.9.8"])
-    import vk_api
+
+def _pip_install(packages):
+    """Пробует установить пакеты всеми возможными способами, возвращает True при успехе."""
+    base = [sys.executable, "-m", "pip", "install",
+            "--no-input", "--disable-pip-version-check"]
+    attempts = [
+        [],
+        ["--user"],
+        ["--break-system-packages"],
+        ["--user", "--break-system-packages"],
+    ]
+    for extra in attempts:
+        cmd = base + extra + packages
+        print(">>> PIP:", " ".join(cmd), flush=True)
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            print(">>> PIP STDOUT:", (r.stdout or "")[-3000:], flush=True)
+            print(">>> PIP STDERR:", (r.stderr or "")[-3000:], flush=True)
+            if r.returncode == 0:
+                print(">>> PIP OK", flush=True)
+                return True
+        except Exception as e:
+            print(">>> PIP EXCEPTION:", repr(e), flush=True)
+    return False
+
+
+def _ensure(module_name, pip_name):
+    """Импортирует модуль, при неудаче — ставит через pip."""
+    try:
+        importlib.invalidate_caches()
+        return importlib.import_module(module_name)
+    except ImportError:
+        print(f">>> Модуль {module_name} не найден, ставлю {pip_name}...", flush=True)
+        if not _pip_install([pip_name]):
+            print(f">>> НЕ УДАЛОСЬ установить {pip_name}", flush=True)
+            return None
+        importlib.invalidate_caches()
+        try:
+            return importlib.import_module(module_name)
+        except ImportError as e:
+            print(f">>> ФАТАЛЬНО: {module_name} так и не импортировался: {e}", flush=True)
+            return None
+
+
+# Устанавливаем ключевые библиотеки при старте
+_ensure("vk_api", "vk_api==11.9.8")
+_ensure("flask", "flask")
+_ensure("PIL", "pillow")
+
+import vk_api
 
 import hmac
 import json
