@@ -19,7 +19,14 @@
 """
 
 print(">>> ЗАПУЩЕНА ВЕРСИЯ ФАЙЛА: v3 (с автоустановкой библиотек)", flush=True)
+import subprocess
+import sys
 
+try:
+    import vk_api
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "vk_api==11.9.8"])
+    import vk_api
 import hmac
 import json
 import logging
