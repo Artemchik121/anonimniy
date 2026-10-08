@@ -46,15 +46,17 @@ from database import (execute, one, many, init_db, now, get_user, uname, set_sta
                       state_data, get_stats)
 
 # ════════════════════════════ НАСТРОЙКИ ════════════════════════════
-TOKEN = os.environ.get("BOT_TOKEN")      # ключ доступа сообщества
-GROUP_ID = os.environ.get("VK_GROUP_ID")                  # ID сообщества (только цифры, без минуса)
-ADMIN_IDS = [739351270]                         # ваши VK ID — получат админ-кнопки в боте
+# На хостинге задавайте значения через переменные окружения (VK_TOKEN, VK_GROUP_ID,
+# ADMIN_IDS, WEB_PASSWORD) — тогда секреты не попадут на GitHub.
+TOKEN = os.environ.get("BOT_TOKEN") or os.environ.get("VK_TOKEN") or ""     # ключ доступа сообщества
+GROUP_ID = int(os.environ.get("VK_GROUP_ID") or 0)                          # ID сообщества (только цифры)
+ADMIN_IDS = [int(x) for x in os.environ.get("ADMIN_IDS", "739351270").split(",") if x.strip()]
 
 WEB_ENABLED = True                      # веб-панель вкл/выкл
-WEB_HOST = "127.0.0.1"                  # "0.0.0.0" — если нужен доступ с других устройств
-WEB_PORT = 5000
-WEB_PASSWORD = os.environ.get("SECRET", "changeme")            # пароль входа в веб-панель
-SECRET_KEY = os.environ.get("SECRET", "changeme")                        # любая длинная строка; пусто = случайная при каждом старте
+WEB_HOST = os.environ.get("WEB_HOST", "127.0.0.1")                  # "0.0.0.0" — если нужен доступ с других устройств
+WEB_PORT = int(os.environ.get("PORT", 5000))
+WEB_PASSWORD = os.environ.get("WEB_PASSWORD") or os.environ.get("SECRET") or "changeme"            # пароль входа в веб-панель
+SECRET_KEY = ""                         # любая длинная строка; пусто = случайная при каждом старте
 
 ASK_COOLDOWN = 20                       # секунд между вопросами одного человека
 MAX_LEN = 1000                          # макс. длина вопроса / ответа
@@ -1249,12 +1251,12 @@ def run_web():
 if __name__ == "__main__":
     init_db()
     if WEB_ENABLED:
-        if WEB_PASSWORD == "ИЗМЕНИ_МЕНЯ":
+        if WEB_PASSWORD == "changeme":
             log.warning("⚠️  Смените WEB_PASSWORD в настройках!")
         threading.Thread(target=run_web, daemon=True).start()
 
-    if TOKEN.startswith("ВСТАВЬ") or GROUP_ID == 123456789:
-        log.error("Укажите TOKEN и GROUP_ID в начале файла. Веб-панель при этом работает, бот — нет.")
+    if not TOKEN or not GROUP_ID:
+        log.error("Не заданы переменные BOT_TOKEN и VK_GROUP_ID. Веб-панель при этом работает, бот — нет.")
         if WEB_ENABLED:
             try:
                 while True:
