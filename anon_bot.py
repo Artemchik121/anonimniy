@@ -30,6 +30,36 @@ import threading
 import time
 from datetime import datetime
 
+# ── Автоустановка библиотек ──────────────────────────────────────────
+# Если хостинг не поставил зависимости из requirements.txt, бот доустановит их сам.
+def _ensure_packages():
+    import importlib
+    import site
+    import subprocess
+    need = [("vk_api", "vk_api>=11.9.9"), ("flask", "flask"), ("PIL", "pillow")]
+    missing = []
+    for mod, pkg in need:
+        try:
+            importlib.import_module(mod)
+        except ImportError:
+            missing.append(pkg)
+    if not missing:
+        return
+    print("Не найдены библиотеки:", ", ".join(missing), "- устанавливаю...", flush=True)
+    base = [sys.executable, "-m", "pip", "install", "--no-input", "--disable-pip-version-check"]
+    for extra in ([], ["--user"], ["--break-system-packages"], ["--user", "--break-system-packages"]):
+        if subprocess.call(base + extra + missing) == 0:
+            break
+    importlib.invalidate_caches()
+    try:
+        sys.path.append(site.getusersitepackages())
+    except Exception:
+        pass
+
+
+_ensure_packages()
+
+
 import vk_api
 try:
     from PIL import Image, ImageDraw, ImageFont
